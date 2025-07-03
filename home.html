@@ -126,54 +126,22 @@ window.addEventListener('keydown',function(e){
     window.location.href='secret.html';
   }
 });
-let drawing=false,points=[];
-const melon=document.querySelector('.melon');
-const melonRect=()=>melon.getBoundingClientRect();
-const canvasDraw=document.createElement('canvas');
-canvasDraw.style.position='fixed';
-canvasDraw.style.left=0;canvasDraw.style.top=0;
-canvasDraw.style.width='100vw';canvasDraw.style.height='100vh';
-canvasDraw.style.pointerEvents='none';
-canvasDraw.width=window.innerWidth;
-canvasDraw.height=window.innerHeight;
-document.body.appendChild(canvasDraw);
-function isCircle(pts){
-  if(pts.length<20) return false;
-  let cx=pts.reduce((a,b)=>a+b.x,0)/pts.length;
-  let cy=pts.reduce((a,b)=>a+b.y,0)/pts.length;
-  let r=pts.reduce((a,b)=>a+Math.hypot(b.x-cx,b.y-cy),0)/pts.length;
-  let err=pts.reduce((a,b)=>a+Math.abs(Math.hypot(b.x-cx,b.y-cy)-r),0)/pts.length;
-  let rect=melonRect();
-  let mx=rect.left+rect.width/2,my=rect.top+rect.height/2;
-  let inside=Math.hypot(mx-cx,my-cy)<r-rect.width/2;
-  return err<20&&inside;
-}
-function drawPath(){
-  const ctx=canvasDraw.getContext('2d');
-  ctx.clearRect(0,0,canvasDraw.width,canvasDraw.height);
-  if(points.length>1){
-    ctx.strokeStyle='#fc575e';ctx.lineWidth=4;
-    ctx.beginPath();
-    ctx.moveTo(points[0].x,points[0].y);
-    for(let p of points)ctx.lineTo(p.x,p.y);
-    ctx.stroke();
+let threeFingerSwipeCount = 0;
+let lastSwipeTime = 0;
+window.addEventListener('touchstart', e => {
+  if (e.touches.length === 3) {
+    let now = Date.now();
+    if (now - lastSwipeTime < 1000) {
+      threeFingerSwipeCount++;
+      if (threeFingerSwipeCount >= 2) {
+        window.location.href = 'secret.html';
+      }
+    } else {
+      threeFingerSwipeCount = 1;
+    }
+    lastSwipeTime = now;
   }
-}
-window.addEventListener('mousedown',e=>{drawing=true;points=[{x:e.clientX,y:e.clientY}]});
-window.addEventListener('mousemove',e=>{if(drawing){points.push({x:e.clientX,y:e.clientY});drawPath();}});
-window.addEventListener('mouseup',()=>{
-  drawing=false;
-  if(isCircle(points)) window.location.href='secret.html';
-  points=[];drawPath();
 });
-window.addEventListener('touchstart',e=>{if(e.touches.length===1){drawing=true;points=[{x:e.touches[0].clientX,y:e.touches[0].clientY}]}});
-window.addEventListener('touchmove',e=>{if(drawing&&e.touches.length===1){points.push({x:e.touches[0].clientX,y:e.touches[0].clientY});drawPath();}});
-window.addEventListener('touchend',()=>{
-  drawing=false;
-  if(isCircle(points)) window.location.href='secret.html';
-  points=[];drawPath();
-});
-window.addEventListener('resize',()=>{canvasDraw.width=window.innerWidth;canvasDraw.height=window.innerHeight;drawPath();});
 </script>
 </body>
 </html>
