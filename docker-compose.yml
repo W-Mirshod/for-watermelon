@@ -1,8 +1,25 @@
 version: '3.8'
 services:
-  watermelon:
+  web:
     build: .
+    container_name: watermelon-web
+    networks:
+      - watermelon-net
+
+  nginx:
+    image: nginx:alpine
+    container_name: watermelon-nginx
     ports:
       - "${PORT:-0}:80"
+    depends_on:
+      - web
+    volumes:
+      - ./nginx.conf:/etc/nginx/conf.d/default.conf:ro
+    networks:
+      - watermelon-net
     environment:
       - PORT
+
+networks:
+  watermelon-net:
+    driver: bridge
