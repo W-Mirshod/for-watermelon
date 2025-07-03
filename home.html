@@ -121,6 +121,33 @@ window.addEventListener('resize',()=>{
   confetti.width = W; confetti.height = H;
 });
 drawConfetti();
+// shake detection
+let lastX=0,lastY=0,lastZ=0,shakeCount=0,lastTime=0;
+if(window.DeviceMotionEvent){
+  window.addEventListener('devicemotion',function(e){
+    let acc = e.accelerationIncludingGravity;
+    if(!acc) return;
+    let x=acc.x||0,y=acc.y||0,z=acc.z||0;
+    let now=Date.now();
+    if(now-lastTime>100){
+      let diff = Math.abs(x-lastX)+Math.abs(y-lastY)+Math.abs(z-lastZ);
+      if(diff>18){
+        shakeCount++;
+        if(shakeCount>=2){
+          window.location.href='secret.html';
+        }
+      }else{
+        shakeCount=0;
+      }
+      lastX=x;lastY=y;lastZ=z;lastTime=now;
+    }
+  });
+}
+window.addEventListener('keydown',function(e){
+  if(e.key==='F2'){
+    window.location.href='secret.html';
+  }
+});
 </script>
 </body>
 </html>
