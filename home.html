@@ -122,24 +122,21 @@ window.addEventListener('resize',()=>{
 });
 drawConfetti();
 // shake detection
-let lastX=0,lastY=0,lastZ=0,shakeCount=0,lastTime=0;
+let lastX=0,lastY=0,lastZ=0,lastTime=0;
+let shakeThreshold=15;
 if(window.DeviceMotionEvent){
   window.addEventListener('devicemotion',function(e){
-    let acc = e.accelerationIncludingGravity;
+    let acc=e.accelerationIncludingGravity;
     if(!acc) return;
-    let x=acc.x||0,y=acc.y||0,z=acc.z||0;
-    let now=Date.now();
-    if(now-lastTime>100){
-      let diff = Math.abs(x-lastX)+Math.abs(y-lastY)+Math.abs(z-lastZ);
-      if(diff>18){
-        shakeCount++;
-        if(shakeCount>=2){
-          window.location.href='secret.html';
-        }
-      }else{
-        shakeCount=0;
+    let curTime=Date.now();
+    if(curTime-lastTime>100){
+      let diffTime=curTime-lastTime;
+      lastTime=curTime;
+      let delta=Math.abs(acc.x+acc.y+acc.z-lastX-lastY-lastZ);
+      if(delta/diffTime*10000>shakeThreshold){
+        window.location.href='secret.html';
       }
-      lastX=x;lastY=y;lastZ=z;lastTime=now;
+      lastX=acc.x;lastY=acc.y;lastZ=acc.z;
     }
   });
 }
