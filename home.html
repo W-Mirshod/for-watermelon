@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Watermelon</title>
+    <style>
+        body {
+            background: linear-gradient(135deg, #f7b42c 0%, #fc575e 100%);
+            min-height: 100vh;
+            margin: 0;
+            font-family: 'Segoe UI', Arial, sans-serif;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            animation: bgmove 10s ease-in-out infinite alternate;
+        }
+        @keyframes bgmove {
+            0% { background-position: 0% 50%; }
+            100% { background-position: 100% 50%; }
+        }
+        .container {
+            background: rgba(255,255,255,0.9);
+            border-radius: 24px;
+            box-shadow: 0 8px 32px rgba(0,0,0,0.15);
+            padding: 48px 32px;
+            text-align: center;
+            transform: scale(0.95);
+            animation: popin 1.2s cubic-bezier(.68,-0.55,.27,1.55) 0.2s both;
+        }
+        @keyframes popin {
+            0% { transform: scale(0.5) rotate(-10deg); opacity: 0; }
+            80% { transform: scale(1.05) rotate(2deg); opacity: 1; }
+            100% { transform: scale(1) rotate(0deg); }
+        }
+        .melon {
+            font-size: 5rem;
+            margin-bottom: 16px;
+            display: inline-block;
+            animation: bounce 1.5s infinite cubic-bezier(.68,-0.55,.27,1.55);
+        }
+        @keyframes bounce {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-24px) scale(1.1); }
+        }
+        h1 {
+            color: #fc575e;
+            margin-bottom: 8px;
+            letter-spacing: 2px;
+            animation: fadein 2s 0.8s both;
+        }
+        @keyframes fadein {
+            0% { opacity: 0; transform: translateY(20px); }
+            100% { opacity: 1; transform: translateY(0); }
+        }
+        p {
+            color: #333;
+            font-size: 1.2rem;
+            animation: fadein 2s 1.2s both;
+        }
+        .confetti {
+            position: fixed;
+            top: 0; left: 0; width: 100vw; height: 100vh;
+            pointer-events: none;
+            z-index: 999;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="melon">🍉</div>
+        <h1>Watermelon</h1>
+        <p>This website is a sweet gift for you!<br>Enjoy your day, friend! 🍉</p>
+    </div>
+</body>
+<canvas class="confetti"></canvas>
+<script>
+const confetti = document.querySelector('.confetti');
+const ctx = confetti.getContext('2d');
+let W = window.innerWidth, H = window.innerHeight;
+confetti.width = W; confetti.height = H;
+let pieces = [];
+for(let i=0;i<120;i++){
+  pieces.push({
+    x: Math.random()*W,
+    y: Math.random()*H,
+    r: 6+Math.random()*8,
+    d: 2+Math.random()*2,
+    color: `hsl(${Math.random()*360},90%,60%)`,
+    tilt: Math.random()*10,
+    tiltAngle: 0,
+    tiltAngleInc: (Math.random()*0.07)+.05
+  });
+}
+function drawConfetti(){
+  ctx.clearRect(0,0,W,H);
+  for(let p of pieces){
+    ctx.beginPath();
+    ctx.lineWidth = p.r;
+    ctx.strokeStyle = p.color;
+    ctx.moveTo(p.x+p.tilt+Math.sin(p.tiltAngle)*8,p.y);
+    ctx.lineTo(p.x,p.y+p.tilt);
+    ctx.stroke();
+  }
+  updateConfetti();
+  requestAnimationFrame(drawConfetti);
+}
+function updateConfetti(){
+  for(let p of pieces){
+    p.y += p.d;
+    p.x += Math.sin(p.tiltAngle)*2;
+    p.tiltAngle += p.tiltAngleInc;
+    if(p.y>H){
+      p.y = -10; p.x = Math.random()*W;
+    }
+  }
+}
+window.addEventListener('resize',()=>{
+  W = window.innerWidth; H = window.innerHeight;
+  confetti.width = W; confetti.height = H;
+});
+drawConfetti();
+</script>
+</body>
+</html>

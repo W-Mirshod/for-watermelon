@@ -1,0 +1,8 @@
+version: '3.8'
+services:
+  watermelon:
+    build: .
+    ports:
+      - "${PORT:-0}:80"
+    environment:
+      - PORT
