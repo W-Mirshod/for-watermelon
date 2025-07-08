@@ -2,7 +2,11 @@ version: '3.8'
 services:
   watermelon:
     build: .
-    ports:
-      - "${PORT:-0}:80"
-    environment:
-      - PORT
+    expose:
+      - "80"
+    networks:
+      - web
+
+networks:
+  web:
+    external: true
